@@ -1,7 +1,11 @@
 import react, {useState, useEffect} from "react"
 import authService from "./../../services/auth.service"
+import { useNavigate } from "react-router-dom"
 
 const Login = () => {
+
+    const navigate = useNavigate()
+
     const subtitulo = "Ingrese sus credenciales"
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -15,6 +19,9 @@ const Login = () => {
         try {
             const {data} = await authService.loginConNode(credenciales)
             console.log(data)
+            localStorage.setItem("access_token",data.access_token )
+
+            navigate("/usuario")
             
         } catch (error) {
             console.log(error);
