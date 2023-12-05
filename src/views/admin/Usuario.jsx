@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import usuarioService from "../../services/usuario.service";
+import Modal from "../../components/Modal";
+import TablePagination from "../../components/TablePagination";
 
 
 const Usuario = () => {
@@ -9,6 +11,17 @@ const Usuario = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [usuario_id, setUsuarioId] = useState("");
+    const [modalOpen, setModalOpen] = useState(false);
+    
+    const [page, setPage] = useState(1)
+    const [total, setTotal] = useState(0)
+
+    const columnas = [
+        {key: "id", label: "COD"},
+        {key: "username", label: "NOMBRE"},
+        {key: "email", label: "CORREO"}
+        
+    ]
 
     useEffect(() => {
 
@@ -30,9 +43,11 @@ const Usuario = () => {
         getUsuarios()
     }, [])
 
-    const getUsuarios = async () => {
-        const { data } = await usuarioService.listar()
+    const getUsuarios = async (nroPage = 1, limit=5) => {
+        setPage(nroPage)
+        const { data } = await usuarioService.listar(nroPage, limit)
         setUsuarios(data.rows);
+        setTotal(data.count)
     }
 
     const guardarUsuario = async (e) => {
@@ -65,24 +80,10 @@ const Usuario = () => {
             <h1>Lista de Usuarios</h1>
             {/*JSON.stringify(usuarios)*/}
 
-            <form onSubmit={(e) => guardarUsuario(e)}>
+            <TablePagination datos={usuarios} total={total} columnas={columnas} page={page} fetchData={getUsuarios} handleShow={true}></TablePagination>
 
-                <div className="mb-4">
-                    <label htmlFor="name" className="block text-gray-600 text-sm font-medium mb-2">Nombre</label>
-                    <input type="text" id="name" className="w-full px-3 py-2 border-gray-300 rounded-md focus:outline-none focus:border-blue-500" value={name} onChange={e => setName(e.target.value)} required />
 
-                </div>
-                <div className="mb-4">
-                    <label htmlFor="co">Correo</label>
-                    <input type="email" id="co" className="w-full px-3 py-2 border-gray-300 rounded-md focus:outline-none focus:border-blue-500" value={email} onChange={e => setEmail(e.target.value)} required />
-                </div>
-                <div className="mb-4">
-                    <label htmlFor="pass">Contraseña</label>
-                    <input type="password" id="pass" className="w-full px-3 py-2 border-gray-300 rounded-md focus:outline-none focus:border-blue-500" onChange={e => setPassword(e.target.value)} required />
-                </div>
-
-                <input type="submit" />
-            </form>
+            <button className="bg-blue-500 hover:bg-blue-700 rounded py-2 px-4 text-white" onClick={() => setModalOpen(true)}>Nuevo Usuario</button>
 
             <table className="min-w-full bg-white">
                 <thead>
@@ -108,6 +109,28 @@ const Usuario = () => {
                     ))}
                 </tbody>
             </table>
+
+            <Modal titulo="Nuevo Usuario" modalOpen={modalOpen} setModalOpen={setModalOpen}>
+                <form onSubmit={(e) => guardarUsuario(e)}>
+
+                    <div className="mb-4">
+                        <label htmlFor="name" className="block text-gray-600 text-sm font-medium mb-2">Nombre</label>
+                        <input type="text" id="name" className="w-full px-3 py-2 border-gray-300 rounded-md focus:outline-none focus:border-blue-500" value={name} onChange={e => setName(e.target.value)} required />
+
+                    </div>
+                    <div className="mb-4">
+                        <label htmlFor="co">Correo</label>
+                        <input type="email" id="co" className="w-full px-3 py-2 border-gray-300 rounded-md focus:outline-none focus:border-blue-500" value={email} onChange={e => setEmail(e.target.value)} required />
+                    </div>
+                    <div className="mb-4">
+                        <label htmlFor="pass">Contraseña</label>
+                        <input type="password" id="pass" className="w-full px-3 py-2 border-gray-300 rounded-md focus:outline-none focus:border-blue-500" onChange={e => setPassword(e.target.value)} required />
+                    </div>
+
+                    <input type="submit" value="Guardar" className="bg-blue-500 hover:bg-blue-700 rounded py-2 px-4 text-white" />
+                </form>
+
+            </Modal>
 
         </>
     );
