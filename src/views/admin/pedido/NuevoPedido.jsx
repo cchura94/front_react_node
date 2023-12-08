@@ -128,7 +128,6 @@ const NuevoPedido = () => {
                                     ))}
                                 </tbody>
                             </table>
-
                         </div>
                         <div className="bg-white p-4 rounded shadow">
                             <h1>CLIENTE</h1>
@@ -141,7 +140,6 @@ const NuevoPedido = () => {
                                     <h2>CI/NIT: {clienteSeleccionado.ci_nit}</h2>
                                     <h2>TELEFONO: {clienteSeleccionado.telefono}</h2>
                                 </div>
-                            
                             }
 
                         </div>
